@@ -1,0 +1,7 @@
+linters:
+  disable:
+    - wsl
+run:
+  timeout: 1m
+service:
+  golangci-lint-version: 1.20.x
