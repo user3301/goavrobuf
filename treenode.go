@@ -43,7 +43,7 @@ func (t TreeNode) GetChildren() []map[string]interface{} {
 func GetType(t interface{}) NodeType {
 	switch t.(type) {
 	case string:
-		if t.(string) == "record" {
+		if t == "record" {
 			return Root
 		}
 		return Primitive
