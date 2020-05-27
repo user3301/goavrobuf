@@ -2,12 +2,10 @@ package goavrobuf
 
 type NodeType int
 
-const(
-	Root NodeType = iota
-	Record
+const (
+	Record NodeType = iota
 	Primitive
+	Repeated
+	Enum
+	Unknown
 )
-
-//func (n NodeType) String() string {
-//	return [...]{""}
-//}
