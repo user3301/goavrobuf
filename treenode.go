@@ -3,11 +3,13 @@ package goavrobuf
 type TreeNoder interface {
 	GetName() string
 	GetChildren() []map[string]interface{}
+	GetType() NodeType
+	GetOriginalType() interface{}
 }
 
 type TreeNode struct {
 	Name     string
-	Type     NodeType
+	Type     interface{}
 	Children []map[string]interface{}
 }
 
@@ -20,7 +22,7 @@ func NewTreeNode(node map[string]interface{}) TreeNoder {
 	if !ok {
 		panic("cannot determine name of node")
 	}
-	nodeType := GetType(t)
+	nodeType := Type(t)
 	var children []map[string]interface{}
 	if c, ok := node["fields"]; ok {
 		children = getChildren(c)
@@ -40,11 +42,19 @@ func (t TreeNode) GetChildren() []map[string]interface{} {
 	return t.Children
 }
 
-func GetType(t interface{}) NodeType {
+func (t TreeNode) GetType() NodeType {
+	return Type(t.Type)
+}
+
+func (t TreeNode) GetOriginalType() interface{} {
+	return t.Type
+}
+
+func Type(t interface{}) NodeType {
 	switch t.(type) {
 	case string:
 		if t == "record" {
-			return Root
+			return Record
 		}
 		return Primitive
 	case map[string]interface{}:
@@ -55,7 +65,7 @@ func GetType(t interface{}) NodeType {
 }
 
 func getChildren(c interface{}) []map[string]interface{} {
-	sm , ok := c.([]interface{})
+	sm, ok := c.([]interface{})
 	if !ok {
 		panic("cannot parse fields")
 	}
