@@ -117,19 +117,23 @@ func (node JsonTreeNode) GetNodeType() NodeType {
 
 func (node JsonTreeNode) GetFields() []JsonTreeNoder {
 	var fields []JsonTreeNoder
+
+	if seen.Contain(node.GetName()) {
+		return fields
+	}
 	if node.GetNodeType() == Primitive {
 		return fields
 	}
 	sm, ok := node.fields.([]interface{})
 	if !ok {
-		panic("cannot parse fields")
+		return fields
 	}
 	for _, cc := range sm {
 		node, ok := cc.(map[string]interface{})
 		if !ok {
 			panic("cannot get field")
 		}
-		f, ok := node["fields"]
+		f := node["fields"]
 		jsonTreeNode := NewJsonTreeNode(node["name"].(string), node["type"], f)
 		fields = append(fields, jsonTreeNode)
 	}

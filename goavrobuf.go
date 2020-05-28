@@ -7,6 +7,12 @@ import (
 	"strings"
 )
 
+var seen RecordSet
+
+func init() {
+	seen = make(RecordSet)
+}
+
 func NewSchema(schemaSpecification string) (JsonTreeNoder, error) {
 	var schema interface{}
 	if err := json.Unmarshal([]byte(schemaSpecification), &schema); err != nil {
@@ -32,20 +38,22 @@ func GenerateProto3(root JsonTreeNoder) string {
 			queue = queue[1:]
 			switch current.GetNodeType() {
 			case Record:
-				b := handleRecord(current)
-				buffer.Write(b.Bytes())
-				for _, n := range current.GetFields() {
-					if n.GetNodeType() == Record || n.GetNodeType() == Enum {
-						queue = append(queue, n)
+				if !seen.Contain(current.GetName()) {
+					b := handleRecord(current)
+					buffer.Write(b.Bytes())
+					for _, n := range current.GetFields() {
+						if n.GetNodeType() == Record || n.GetNodeType() == Enum {
+							queue = append(queue, n)
+						}
 					}
 				}
+				seen.Add(current.GetName())
 			case Enum:
 				b := handleEnum(current)
 				buffer.Write(b.Bytes())
 			}
 		}
 	}
-	fmt.Print("done!")
 	return buffer.String()
 }
 
