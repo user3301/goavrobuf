@@ -26,7 +26,6 @@ func GenerateProto3(root JsonTreeNoder) string {
 	//breadth first iterate
 	queue = append(queue, root)
 	for len(queue) != 0 {
-
 		size := len(queue)
 		for i := 0; i < size; i++ {
 			current := queue[0]
@@ -77,12 +76,17 @@ func handleRecord(node JsonTreeNoder) bytes.Buffer {
 			counter++
 		case Repeated:
 			rType, rName := GetRepeatedTypeName(v.GetTypeData())
+			if rName == "" {
+				rName = v.GetName()
+			}
 			buffer.WriteString(fmt.Sprintf("repeated %s %s = %d;\n\t", rType, rName, counter))
 			counter++
 		case Enum:
 			eName, _ := GetEnumSymbols(v.GetTypeData())
 			buffer.WriteString(fmt.Sprintf("%s %s = %d;\n\t", eName, strings.ToLower(eName), counter))
 			counter++
+		case Unknown:
+			continue
 		}
 	}
 	buffer.WriteString("}\n")

@@ -72,8 +72,12 @@ func (node JsonTreeRoot) GetFields() []JsonTreeNoder {
 			panic("cannot get field")
 		}
 
-		v, ok := n["fields"]
-		jsonTreeNode := NewJsonTreeNode(n["name"].(string), n["type"], v)
+		v, ok := n["type"].(map[string]interface{})
+		var f interface{}
+		if ok {
+			f = v["fields"]
+		}
+		jsonTreeNode := NewJsonTreeNode(n["name"].(string), n["type"], f)
 		fields = append(fields, jsonTreeNode)
 	}
 	return fields
@@ -100,14 +104,14 @@ func (node JsonTreeNode) GetNodeType() NodeType {
 		case "enum":
 			return Enum
 		default:
-			panic("unknown type")
+			return Unknown
 		}
 	case []interface{}:
 		return Repeated
 	case string:
 		return Primitive
 	default:
-		panic("unknown type")
+		return Unknown
 	}
 }
 
@@ -125,12 +129,8 @@ func (node JsonTreeNode) GetFields() []JsonTreeNoder {
 		if !ok {
 			panic("cannot get field")
 		}
-
-		v, ok := node["fields"]
-		if !ok {
-			panic("wtf?")
-		}
-		jsonTreeNode := NewJsonTreeNode(node["name"].(string), node["type"], v)
+		f, ok := node["fields"]
+		jsonTreeNode := NewJsonTreeNode(node["name"].(string), node["type"], f)
 		fields = append(fields, jsonTreeNode)
 	}
 	return fields

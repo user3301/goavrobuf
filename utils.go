@@ -1,5 +1,7 @@
 package goavrobuf
 
+import "fmt"
+
 func BuildinTypeToString(t interface{}) string {
 	s, ok := t.(string)
 	if !ok {
@@ -14,8 +16,14 @@ func GetRepeatedTypeName(t interface{}) (string, string) {
 		panic("cannot parse repeated type to slice")
 	}
 	for _, v := range a {
+		fmt.Print(v)
 		if m, ok := v.(map[string]interface{}); ok {
 			return m["type"].(string), m["items"].(string)
+		}
+		if m, ok := v.(string); ok {
+			if m != "null" {
+				return m, ""
+			}
 		}
 	}
 	panic("cannot determine type and name")
