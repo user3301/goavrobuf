@@ -8,9 +8,9 @@ func BuildinTypeToString(t interface{}) string {
 	return s
 }
 
-// type, name, []jsontreenodes, oneof[]
+//TODO handle repected type
 func GetRepeatedTypeName(t interface{}) (string, string) {
-	return "aa", "aa"
+	return "TODO", "TODO"
 }
 
 func GetEnumSymbols(t interface{}) (string, []string) {
